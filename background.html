@@ -1,0 +1,43 @@
+<script src="mootools-1.2.4-core.js"></script>
+<script>
+    var defaults = {
+                'fpm': 300,
+                'words': 2,
+                'font': 24
+            };
+
+    function getValue(item){
+        var lsval = localStorage[item];
+        if(lsval == null || lsval == undefined || lsval == "null"){
+          return defaults[item];
+        } 
+      return lsval;
+    };
+    chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+        var conf = {}
+        if (request.command == 'getSettings'){
+            for (var item in defaults){
+                if (item == undefined){
+                    break;
+                }
+                conf[item] = getValue(item);
+            
+            }
+        }
+        sendResponse({'settings':conf});
+    });
+
+    chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+        if (request.command == 'saveSettings'){
+            var data = request.settings_data;
+            for(var item in data){
+                if(item == undefined ){
+                    break;
+                }
+                localStorage[item] = data[item]
+            }
+        }
+        sendResponse({});
+    });
+
+</script>

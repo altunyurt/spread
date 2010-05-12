@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <script type="text/javascript" src="mootools-1.2.4-core.js"></script>
+        <script type="text/javascript">
+            defaults = {
+                'delay': 500,
+                'words': 2,
+                'font': 14
+            };
+
+            function restore_options(){
+                var settings = localStorage['spread_settings'] || {};
+                $$('input').each(function(item){
+                        var setting_name = item.name;
+                        item.value = (settings[setting_name] != undefined
+                            )?settings[setting_name] : defaults[setting_name];
+                        });
+            };
+            
+            function save_options(data){
+                settings = {};
+                $$('input').each(function(item){
+                        var setting_name = item.name;
+                        var value =  item.value;
+                        settings[setting_name] = value;
+                });
+                localStorage['spread_settings'] = settings;
+            };
+            
+        </script>
+    </head>
+    <body onload="restore_options();">
+        <div id="options">
+            <h3>Speed reader options:</h3>
+            <label for="delay">Delay between frames:</label><input type="text"
+            name="delay" id="delay"><br>
+            <label for="font">Font size:</label><input type="text"  name="font" id="font"><br>
+            <label for="words">Number of words to display:</label><input
+            type="text" name="words" id="words"><br>
+            <button onclick="save_options();">Save options</button><br>
+    </div>
+        
+    </body>
+
+</html>
