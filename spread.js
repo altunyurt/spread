@@ -36,6 +36,7 @@ var SPREAD_TEXT_READER = function(content, conf){
     this.timer = null;
     this.running = false;
     this.interval = null;
+    this.slider = null;
 
     this.next = function(){
         var c = (this.content.slice(this.idx, this.idx+this.step)).join(' ');
@@ -89,6 +90,9 @@ var SPREAD_TEXT_READER = function(content, conf){
             if (hede === null){
                 return this.stop();
             } 
+            if(this.slider){
+                this.slider.set(this.idx);
+            }
             $('spread_reader_body').textContent = hede;
         }, this.interval);
         return this.displaySettings();
@@ -124,6 +128,9 @@ var SPREAD_TEXT_READER = function(content, conf){
 
 
 function create_reader(text){
+    text = text.replace(/(\w+)([,\.:;\(\)\[\]\"]+)(\w+)/gim, '$1$2 $3');
+    var count = text.match(/([^\s\t]+)/gim).length;
+    
     chrome.extension.sendRequest({command:'getSettings'}, 
             function(response){
                 var settings = response.settings; 
@@ -156,20 +163,28 @@ function create_reader(text){
                     id: "infopane"
                 });
 
+                var sliderBody = Element('div', {
+                    id: 'spread_reader_slider',
+                    html: "<div id='spread_reader_knob'></div><span id='speed_reader_step'></span>"
+                });
+
                 var reader_buttons = Element('ul', {
                     html: "<li id='spread_reader_start'>start</li>"+
                     "<li id='spread_reader_stop'>stop</li>"+
+                    "<li id='spread_reader_restart'>restart</li>" + 
+                    "<li><hr></li>" + 
                     "<li id='spread_reader_bigger'>bigger</li>"+
                     "<li id='spread_reader_smaller'>smaller</li>"+
+                    "<li><hr></li>" + 
                     "<li id='spread_reader_faster'>faster</li>"+
                     "<li id='spread_reader_slower'>slower</li>"+
-                    "<li id='spread_reader_restart'>restart</li>" + 
+                    "<li><hr></li>" + 
                     "<li id='spread_reader_more_words'>more words</li>" + 
                     "<li id='spread_reader_less_words'>less words</li>",
                     id:'spread_reader_buttons'
                 });
 
-                div.makeResizable();
+                //div.makeResizable();
                 reader_inner_container.grab(infopane);
                 reader_inner_container.grab(reader_inner);
                 div.grab(reader_inner_container);
@@ -177,6 +192,7 @@ function create_reader(text){
 
                 doc_body.grab(background);
                 doc_body.grab(div);
+                div.grab(sliderBody);
 
                 var x = (wsize.x - $(div).getSize().x)/2;
                 var y = (wsize.y - $(div).getSize().y)/2;
@@ -195,6 +211,16 @@ function create_reader(text){
                     $(reader_inner_container).setStyle('height', divsize.y );
 
                 });
+
+                reader.slider = new Slider($('spread_reader_slider'), $('spread_reader_knob'), {
+	                steps: count,
+                    mode: 'vertical',
+                    snap: true,
+	                onChange: function(step){
+		                $('speed_reader_step').set('text', step);
+                        reader.idx = step; 
+	                    },
+                    }).set(0);
 
                 div.fireEvent('resize');
 
@@ -234,6 +260,7 @@ function create_reader(text){
                 $('spread_reader_less_words').addEvent('click', function(){
                         reader.less_words();
                 });
+
 
             });
 }

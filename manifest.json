@@ -1,6 +1,6 @@
 {
   "name": "Spread",
-  "version": "0.1",
+  "version": "0.1.1",
 
   "description": "Speed reading extension for chrome",
   "background_page": "background.html",
