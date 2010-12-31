@@ -227,12 +227,12 @@ function create_reader(text){
                 
                 $('spread_reader_bigger').addEvent('click', function(){
                         var fontsize = parseInt($('spread_reader_body').getStyle('font-size'));
-                        $('spread_reader_body').setStyle('font-size', fontsize*1.1);
+                        $('spread_reader_body').setStyle('font-size', format('{0} !important', fontsize*1.1));
                         reader.updateSettings();
                 });
                 $('spread_reader_smaller').addEvent('click', function(){
                         var fontsize = parseInt($('spread_reader_body').getStyle('font-size'));
-                        $('spread_reader_body').setStyle('font-size', fontsize*0.9);
+                        $('spread_reader_body').setStyle('font-size', format('{} !important', fontsize*0.9));
                         reader.updateSettings();
                 });
                 $('spread_reader_faster').addEvent('click', function(){

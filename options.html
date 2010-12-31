@@ -1,9 +1,11 @@
 <html>
     <head>
         <script type="text/javascript" src="mootools-1.2.4-core.js"></script>
+        <script type="text/javascript" src="mootools-1.2.4.2-more.js"></script>
+        <script type="text/javascript" src="mooRainbow.js"></script>
         <script type="text/javascript">
             defaults = {
-                'delay': 500,
+                'fpm': 300,
                 'words': 2,
                 'font': 14
             };
@@ -26,17 +28,34 @@
                 });
                 localStorage['spread_settings'] = settings;
             };
-            
+
+            window.addEvent('domready', function() {
+            	var r = new MooRainbow('myRainbow', {
+	                    });
+            });
+
         </script>
+        <link rel="stylesheet" href="spread.css" type="text/css">
+        <link rel="stylesheet" href="mooRainbow.css" type="text/css">
     </head>
     <body onload="restore_options();">
-        <div id="options">
-            <h3>Speed reader options:</h3>
-            <label for="delay">Delay between frames:</label><input type="text"
-            name="delay" id="delay"><br>
-            <label for="font">Font size:</label><input type="text"  name="font" id="font"><br>
-            <label for="words">Number of words to display:</label><input
-            type="text" name="words" id="words"><br>
+        <div id="spread_options">
+            <h3>Spread &ndash; Speed reader options:</h3>
+            
+            <label for="delay">Frames per minute:</label>
+                <input type="text" name="fpm" id="fpm"><br>
+                
+            <label for="font">Font size:</label>
+                <input type="text"  name="font" id="font"><br>
+                
+            <label for="words">Number of words to display:</label>
+                <input type="text" name="words" id="words"><br>
+
+            <label for="readercolor">Panel background color:<label>
+                    <label>
+                <img id="myRainbow" src="images/rainbow.png" alt="[r]" width="16" height="16" />
+	            <input id="myInput" name="myInput" type="text" size="13" />
+                </label>
             <button onclick="save_options();">Save options</button><br>
     </div>
         

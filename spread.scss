@@ -8,12 +8,14 @@
     font-style: inherit !important;
     font-size: 100% !important;
     font-family: inherit !important;
-    vertical-align: baseline !important; }
+    vertical-align: baseline !important; 
+    color: #222 !important;
+}
 
 #spread_reader_background {
     z-index: 9000 !important;
-    background: black !important;
-    opacity: 0.3 !important;
+    background: #333 !important;
+    opacity: 0.8 !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important; }
@@ -27,6 +29,7 @@
     z-index: 9001 !important;
     display: block !important;
     min-width: 400px !important;
+    color: black !important;
     width: 50% !important; }
 
 #spread_reader_body {
@@ -67,46 +70,55 @@ ul#spread_reader_buttons {
                 
         &#spread_reader_stop {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/stop.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
         }
         &#spread_reader_start {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/start.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
         }
         &#spread_reader_bigger {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/bigger.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
         }
         &#spread_reader_smaller {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/smaller.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
         }
         &#spread_reader_faster {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/faster.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
         }
         &#spread_reader_slower {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/slower.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
         }
         &#spread_reader_restart {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/restart.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
         }
         &#spread_reader_more_words {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/more.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important ; 
         }
         &#spread_reader_less_words {
             padding: 2px !important;
+            color: black !important;
             background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/less.png') no-repeat scroll 2px 2px,
                 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important; 
         }
@@ -118,18 +130,19 @@ ul#spread_reader_buttons {
     background: #eee !important; }
 
 #spread_notifier {
-    border: 2px solid #666 !important;
-    -webkit-box-shadow: 1px 1px 10px 0px !important;
     -webkit-border-radius: 5px !important;
-    width: auto !important;
-    display: block !important;
-    position: absolute !important;
-    font-size: 14px !important;
+    -webkit-box-shadow: 1px 1px 10px 0px !important;
     background: white !important;
+    border: 2px solid #666 !important;
+    color: #222 !important;
+    cursor: pointer !important;
+    display: block !important;
+    font-size: 14px !important;
     font-weight: normal !important;
     padding: 4px !important;
-    z-index: 9002 !important;
-    cursor: pointer !important; }
+    position: absolute !important;
+    width: auto !important;
+    z-index: 9002 !important; }
 
 #spread_reader_slider{
     width: 10px !important;
@@ -144,4 +157,12 @@ ul#spread_reader_buttons {
     height: 10px !important;
     background: #aaa !important;
     border: 1px solid #666 !important;
+}
+
+#spread_options {
+    label {
+        width: 250px;
+        float: left;
+        display: inline-block;
+    } 
 }
