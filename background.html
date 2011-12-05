@@ -1,4 +1,4 @@
-<script src="mootools-1.2.4-core.js"></script>
+<script src="jquery-1.7.min.js"></script>
 <script>
     var defaults = {
                 'fpm': 300,
@@ -13,6 +13,7 @@
         } 
       return lsval;
     };
+
     chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         var conf = {}
         if (request.command == 'getSettings'){
@@ -23,12 +24,8 @@
                 conf[item] = getValue(item);
             
             }
-        }
-        sendResponse({'settings':conf});
-    });
-
-    chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-        if (request.command == 'saveSettings'){
+            sendResponse({'settings':conf});
+        } else if (request.command == 'saveSettings'){
             var data = request.settings_data;
             for(var item in data){
                 if(item == undefined ){
@@ -36,8 +33,8 @@
                 }
                 localStorage[item] = data[item]
             }
+            sendResponse({});
         }
-        sendResponse({});
     });
 
 </script>

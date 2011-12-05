@@ -1,15 +1,14 @@
+
 /* minimal reset */
 
+
 #spread_reader * {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    font-weight: inherit !important;
-    font-style: inherit !important;
-    font-size: 100% !important;
-    font-family: inherit !important;
-    vertical-align: baseline !important; 
-    color: #222 !important;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
 }
 
 #spread_reader_background {
@@ -18,7 +17,8 @@
     opacity: 0.8 !important;
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important; }
+    left: 0 !important; 
+}
 
 #spread_reader {
     -webkit-box-shadow: 1px 1px 10px -1px black !important;
@@ -145,18 +145,32 @@ ul#spread_reader_buttons {
     z-index: 9002 !important; }
 
 #spread_reader_slider{
-    width: 10px !important;
-    height: 150px !important;
-    background: #eee !important;
-    border: 1px solid #666 !important;
-    z-index: 9002 !important;
+        /* Styling the sliders */
+
+        width:6px;
+        height:200px;
+        border:1px solid #242424;
+        position:relative;
+        float:left;
+        margin:20px 20px 0;
+        
+        -moz-border-radius:12px;
+        -webkit-border-radius:12px;
+        border-radius:12px;
+        
+        background:url("chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/slider_blue_bg.png") repeat-y;
+        
+        
 }
 
 #spread_reader_knob{
-    width: 10px !important;
-    height: 10px !important;
-    background: #aaa !important;
-    border: 1px solid #666 !important;
+        position:absolute;
+        left:-11px;
+        width:28px;
+        height:12px;
+        background:url("chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/slider_handle.png") no-repeat;
+        cursor:n-resize;
+        top:44%;
 }
 
 #spread_options {
