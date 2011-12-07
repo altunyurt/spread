@@ -97,7 +97,7 @@ var SPREAD_TEXT_READER = function(content, conf){
             if(this.slider){
                 this.slider.set(this.idx);
             }
-            $('spread_reader_body').textContent = hede;
+            $('#spread_reader_body').text(hede);
         }, this.interval);
         return this.displaySettings();
     };
@@ -112,7 +112,7 @@ var SPREAD_TEXT_READER = function(content, conf){
             /* frame per minute */
             'fpm': this.conf.fpm, 
             'words': parseInt(this.step),
-            'font': parseInt($('spread_reader_body').getStyle('font-size'))
+            'font': parseInt($('#spread_reader_body').css('font-size'))
         };
 
         this.displaySettings();
@@ -121,7 +121,7 @@ var SPREAD_TEXT_READER = function(content, conf){
 
     this.displaySettings = function(){
         $('infopane').textContent = format('{0} wpm / {1} words / {2}px fonts', 
-                this.conf.fpm*this.step, this.step, parseInt($('spread_reader_body').getStyle('font-size')));
+                this.conf.fpm*this.step, this.step, parseInt($('#spread_reader_body').css('font-size')));
 
     };
 
@@ -185,7 +185,7 @@ function create_reader(text){
         .append(reader_buttons);
 
     doc_body.append(background).append(div);
-    div.append(sliderBody);
+    //div.append(sliderBody);
 
     var x = (w_width - $(div).width())/2;
     var y = (w_height - $(div).height())/2;
@@ -223,39 +223,39 @@ function create_reader(text){
     div.trigger('resize');
 
 
-    $('spread_reader_bigger').click(function(){
-        var fontsize = parseInt($('spread_reader_body').getStyle('font-size'));
-        $('spread_reader_body').setStyle('font-size', format('{0} !important', fontsize*1.1));
+    $('#spread_reader_bigger').click(function(){
+        var fontsize = parseInt($('#spread_reader_body').css('font-size'));
+        $('#spread_reader_body').css({'font-size': format('{0}px !important', fontsize + 3)});
         reader.updateSettings();
     });
-    $('spread_reader_smaller').click( function(){
-        var fontsize = parseInt($('spread_reader_body').getStyle('font-size'));
-        $('spread_reader_body').setStyle('font-size', format('{} !important', fontsize*0.9));
+    $('#spread_reader_smaller').click( function(){
+        var fontsize = parseInt($('#spread_reader_body').css('font-size'));
+        $('#spread_reader_body').css({'font-size': format('{0}px !important', fontsize - 3)});
         reader.updateSettings();
     });
-    $('spread_reader_faster').click(function(){
+    $('#spread_reader_faster').click(function(){
         reader.conf.fpm += 20;
         reader.setSpeed();
 
     });
-    $('spread_reader_slower').click(function(){
+    $('#spread_reader_slower').click(function(){
         reader.conf.fpm = (reader.conf.fpm > 20)? reader.conf.fpm - 20: reader.conf.fpm;
         reader.setSpeed();
     });
-    $('spread_reader_restart').click(function(){
+    $('#spread_reader_restart').click(function(){
         reader.restart();
     });
-    $('spread_reader_start').click( function(){
+    $('#spread_reader_start').click( function(){
         reader.start();
     });
-    $('spread_reader_stop').click(function(){
+    $('#spread_reader_stop').click(function(){
         reader.stop();
     });
-    $('spread_reader_more_words').click( function(){
+    $('#spread_reader_more_words').click( function(){
         reader.more_words();
     });
 
-    $('spread_reader_less_words').click( function(){
+    $('#spread_reader_less_words').click( function(){
         reader.less_words();
     });
 
