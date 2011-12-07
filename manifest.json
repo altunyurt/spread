@@ -1,8 +1,8 @@
 {
   "name": "Spread",
-  "version": "0.1.2.1",
+  "version": "0.1.3",
 
-  "description": "Speed reading extension for chrome",
+  "description": "Speed reading extension for Google Chrome",
   "background_page": "background.html",
   "icons": {
     "48":"images/logo48.png",
@@ -16,5 +16,5 @@
       "css": ["spread.css"]
   }],
   "options_page": "options.html",
-  "permissions": ["tabs"] 
+  "permissions": ["tabs", "contextMenus"] 
 }
