@@ -2,6 +2,16 @@
 /* minimal reset */
 
 
+.spread_cf:before,
+.spread_cf:after {
+    content:"";
+        display:table;
+}
+
+.spread_cf:after {
+    clear:both;
+}
+
 #spread_reader * {
         margin: 0;
         padding: 0;
@@ -21,16 +31,18 @@
 }
 
 #spread_reader {
-    -webkit-box-shadow: 1px 1px 10px -1px black !important;
+    box-shadow: 0px 0px 10px  #1a1a1a !important;
     border: 1px solid #999 !important;
+    border-radius: 5px !important;
     background: white !important;
     position: fixed !important;
     top: 100px !important;
     z-index: 9001 !important;
     display: block !important;
-    min-width: 400px !important;
     color: black !important;
-    width: 50% !important; }
+    height: auto !important;
+    overflow: hidden !important;
+}
 
 #spread_reader_body {
     display: table-cell !important;
@@ -42,135 +54,63 @@
 
 #spread_reader_body_container {
     display: table !important;
-    float: left !important; }
+}
 
-#infopane {
-    position: absolute !important;
-    bottom: 2px !important;
-    left: 2px !important;
+#spread_infopane {
     height: 10px !important;
     font-size: 9px !important; }
 
+.spread_right {
+        float: right;
+}
+
 ul#spread_reader_buttons {
     width: auto !important;
-    height: 100% !important;
-    padding: 0 !important;
+    height: auto !important;
+    overflow: hidden !important;
     font-size: 12px !important;
     margin: 0 auto !important;
-    display: block !important;
-    float: right !important;
+    background-color: rgba(77, 77, 77, 0.3);
+
+    label {
+        display: block;
+        line-height: 1.2em;
+    }
 
     li {
-        display: block !important;
-        margin: 2px 1px !important;
+        display: inline-block !important;
+        padding: 2px 10px !important;
         cursor: pointer !important; 
-        border: 1px solid #aaa !important;
-        -webkit-border-radius: 4px !important;
-        background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5f5f5), to(#dedede)) !important;
-                
-        &#spread_reader_stop {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/stop.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
-        }
-        &#spread_reader_start {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/start.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
-        }
-        &#spread_reader_bigger {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/bigger.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
-        }
-        &#spread_reader_smaller {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/smaller.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
-        }
-        &#spread_reader_faster {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/faster.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
-        }
-        &#spread_reader_slower {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/slower.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
-        }
-        &#spread_reader_restart {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/restart.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important;
-        }
-        &#spread_reader_more_words {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/more.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important ; 
-        }
-        &#spread_reader_less_words {
-            padding: 2px !important;
-            color: black !important;
-            background: url('chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/less.png') no-repeat scroll 2px 2px,
-                -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bebebe), to(#dfdfdf)) !important; 
-        }
-        
     } 
 }
 
-#spread_reader_buttons li:hover {
-    background: #eee !important; }
-
-#spread_notifier {
-    -webkit-border-radius: 5px !important;
-    -webkit-box-shadow: 1px 1px 10px 0px !important;
-    background: white !important;
-    border: 2px solid #666 !important;
-    color: #222 !important;
-    cursor: pointer !important;
-    display: block !important;
-    font-size: 14px !important;
-    font-weight: normal !important;
-    padding: 4px !important;
-    position: absolute !important;
-    width: auto !important;
-    z-index: 9002 !important; }
 
 #spread_reader_slider{
         /* Styling the sliders */
 
-        width:6px;
-        height:200px;
+        height:6px;
+        width:200px;
         border:1px solid #242424;
         position:relative;
         float:left;
-        margin:20px 20px 0;
+        margin:10px 0 0 0;
         
         -moz-border-radius:12px;
         -webkit-border-radius:12px;
         border-radius:12px;
         
-        background:url("chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/slider_blue_bg.png") repeat-y;
+        background-repeat:repeat-x;
         
         
 }
 
 #spread_reader_knob{
         position:absolute;
-        left:-11px;
-        width:28px;
-        height:12px;
-        background:url("chrome-extension://hpnjoanfahcolkdgnfecmncnlfklnllk/images/slider_handle.png") no-repeat;
-        cursor:n-resize;
-        top:44%;
+        height:28px;
+        width:12px;
+        background-repeat:no-repeat;
+        cursor:ew-resize;
+        top:-12px;
 }
 
 #spread_options {

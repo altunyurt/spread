@@ -4,6 +4,8 @@
 
 var doc_body  = $("body");
 jQuery.fn.exists = function(){return this.length>0;}
+var myid = chrome.i18n.getMessage("@@extension_id");
+var imagepath = format('chrome-extension://{0}/images/', myid);
 
 function format(){
 
@@ -94,11 +96,12 @@ var SPREAD_TEXT_READER = function(content, conf){
             if (hede === null){
                 return this.stop();
             } 
-            /*
+            
             if(this.slider){
-                this.slider.set(this.idx);
+                console.log(this.slider);
+                this.slider.animate({"left": this.idx});
             }
-            */
+           
             $('#spread_reader_body').text(hede);
         }, this.interval);
         return this.displaySettings();
@@ -122,8 +125,8 @@ var SPREAD_TEXT_READER = function(content, conf){
     };
 
     this.displaySettings = function(){
-        $('infopane').textContent = format('{0} wpm / {1} words / {2}px fonts', 
-                this.conf.fpm*this.step, this.step, parseInt($('#spread_reader_body').css('font-size')));
+        $('#spread_infopane').text(format('{0} wpm / {1} words / {2}px fonts', 
+                this.conf.fpm*this.step, this.step, parseInt($('#spread_reader_body').css('font-size'))));
 
     };
 
@@ -155,77 +158,63 @@ function create_reader(text){
                 });
 
                 var div = $('<div id="spread_reader"></div>');
-                var reader_inner_container = $('<div id="spread_reader_body_container"></div>');
+                var reader_inner_container = $('<div id="spread_reader_body_container" class="spread_cf"></div>');
                 var reader_inner = $('<div id="spread_reader_body"></div>');
-                var infopane = $('<div id="infopane"></div>');
-                var sliderBody = $('<div id="spread_reader_slider"></div>')
-                    .html("<div id='spread_reader_knob'></div><span id='speed_reader_step'></span>");
 
                 var reader_buttons = $('<ul id="spread_reader_buttons"></ul>')
                     .html(
                             "<li><label>Command</label>" + 
-                                "<button id='spread_reader_start'></button>" + 
-                                "<button id='spread_reader_stop'></button>" + 
+                                format("<img id='spread_reader_start' src='{0}/start.png'>", imagepath) +
+                                format("<img id='spread_reader_stop' src='{0}/stop.png'>", imagepath) + 
                             "</li>" + 
-                            "<li>" +
-                                "<button id='spread_reader_bigger'>Bigger</button>" +
-                                "<button id='spread_reader_smaller'>Smaller</button>" +
+                            "<li><label>Font size</label>" +
+                                format("<img id='spread_reader_bigger' src='{0}/plus.png'>", imagepath)  +
+                                format("<img id='spread_reader_smaller' src='{0}/minus.png'>", imagepath) +
                             "</li>" +
-                            "<li>" +
-                                 "<button id='spread_reader_faster'>Faster</button>" +
-                                 "<button id='spread_reader_slower'>Slower</button>" +
+                            "<li><label>Speed</label>" +
+                                format( "<img id='spread_reader_faster' src='{0}/plus.png'>", imagepath)  +
+                                format( "<img id='spread_reader_slower' src='{0}/minus.png'>", imagepath)  +
                             "</li>" + 
-                            "<li>" +
-                                "<button id='spread_reader_more_words'>More words</button>" + 
-                                "<button id='spread_reader_less_words'>Less words</button>" +
-                            "</li>" 
+                            "<li><label># words</label>" +
+                                format("<img id='spread_reader_more_words' src='{0}/plus.png'>", imagepath)  +  
+                                format("<img id='spread_reader_less_words' src='{0}/minus.png'>", imagepath)  +
+                            "</li>" +
+                            "<li class='spread_right'>" +
+                                "<div id='spread_infopane'></div>" +
+                                "<div id='spread_reader_slider'>" +
+                                    "<div id='spread_reader_knob'></div><span id='speed_reader_step'></span>" +
+                                "</div>"+
+                            "</li>"
                          );
 
-                //div.makeResizable();
+                //div.resizable();
                 reader_inner_container
-                    .append(infopane)
                     .append(reader_inner);
 
                 div.append(reader_inner_container)
                     .append(reader_buttons);
 
                 doc_body.append(background).append(div);
-                //div.append(sliderBody);
 
-                var x = (w_width - $(div).width())/2;
-                var y = (w_height - $(div).height())/2;
+                reader_inner_container
+                .css({'width': w_width * 0.6, 'height': w_height * 0.4});
+
+                var x = (w_width - reader_inner_container.width())/2;
+                var y = (w_height - reader_inner_container.height() + reader_buttons.height())/2;
                 div.css({'top': y,'left':x});
 
-                div.resize( function(event){
-                    var x = (w_width - $(div).width())/2;
-                    var y = (w_height - $(div).height())/2;
-                    $(this).css({'top': y, 'left':x});
 
-                    reader_inner_container
-                    .css({'width': $(this).width() - (reader_buttons.width() + 3)})
-                    .css({'height': $(this).height()});
-
-                });
-
-                $('#spread_reader_knob').draggable({
+                $('#spread_reader_slider').css('background-image', format('url({0}/slider_blue_bg.png) !important', imagepath));
+                $('#spread_reader_knob').css('background-image', format('url({0}/slider_handle.png) !important', imagepath))
+                    .draggable({
                     containment:'parent',
-                    axis:'y',
+                    axis:'x',
                     drag:function(e,ui){
-
-                        if(!this.par)
-                {
-
-                    this.par = $(this).parent();
-                    this.parHeight = this.par.height();
-                    this.height = $(this).height();
-                    this.color = $.trim(this.par.attr('class').replace('colorful-slider',''));
-                }
-
-                var ratio = 1-(ui.position.top+this.height)/this.parHeight;
-
+                        var pos = ui.position.left; 
+                        console.log(pos);
                     }
                 });
-                div.trigger('resize');
+                reader.slider = $('#spread_reader_knob');
 
 
                 $('#spread_reader_bigger').click(function(){
@@ -248,7 +237,7 @@ function create_reader(text){
                 });
                 $('#spread_reader_start').click( function(){
                     reader.restart();
-                    $('#spread_reader_start').html('Restart');
+                    $('#spread_reader_start').attr('src', format('{0}/restart.png', imagepath));
                 });
                 $('#spread_reader_stop').click(function(){
                     reader.stop();
