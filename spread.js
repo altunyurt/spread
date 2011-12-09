@@ -21,7 +21,7 @@ function format(){
 function getSelectedText()
 {
     txt = String(window.getSelection());
-    return txt.replace(/^[\s\t]+/g, '').replace(/[\s\t]+$/g, '');
+    return txt.replace(/^[\s\t]+/g, '').replace(/[\s\t]+$/g, '').replace(/[\t\r\n]/g,' ');
 }
 
 function isnotnull(hede){
@@ -43,6 +43,14 @@ var SPREAD_TEXT_READER = function(content, conf){
     this.running = false;
     this.interval = null;
     this.slider = null;
+    this.slider_size = 200;
+
+    this.updateSlider = function(){
+        var rate = this.content.length / this.step;
+        var slider_pos = this.slider_size * (this.idx / this.step)/ rate;
+        console.log("length: " + this.content.length + ' step: ' + this.step +" pos:" + slider_pos +" rate: " + rate + ' idx: '+ this.idx );
+        this.slider.css({"left": slider_pos});
+    };
 
     this.next = function(){
         var c = (this.content.slice(this.idx, this.idx+this.step)).join(' ');
@@ -98,8 +106,7 @@ var SPREAD_TEXT_READER = function(content, conf){
             } 
             
             if(this.slider){
-                console.log(this.slider);
-                this.slider.animate({"left": this.idx});
+                this.updateSlider(); //().animate({"left": this.idx});
             }
            
             $('#spread_reader_body').text(hede);
@@ -211,7 +218,7 @@ function create_reader(text){
                     axis:'x',
                     drag:function(e,ui){
                         var pos = ui.position.left; 
-                        console.log(pos);
+                        // reader.index üzerinden yer belirletmek lazım
                     }
                 });
                 reader.slider = $('#spread_reader_knob');

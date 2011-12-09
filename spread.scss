@@ -71,6 +71,7 @@ ul#spread_reader_buttons {
     font-size: 12px !important;
     margin: 0 auto !important;
     background-color: rgba(77, 77, 77, 0.3);
+    border-top: 1px solid #989898 !important;
 
     label {
         display: block;
@@ -89,7 +90,7 @@ ul#spread_reader_buttons {
         /* Styling the sliders */
 
         height:6px;
-        width:200px;
+        width:212px;
         border:1px solid #242424;
         position:relative;
         float:left;
@@ -111,6 +112,7 @@ ul#spread_reader_buttons {
         background-repeat:no-repeat;
         cursor:ew-resize;
         top:-12px;
+        left: -12px;
 }
 
 #spread_options {
