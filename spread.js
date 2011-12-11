@@ -48,7 +48,6 @@ var SPREAD_TEXT_READER = function(content, conf){
     this.updateSlider = function(){
         var rate = this.content.length / this.step;
         var slider_pos = this.slider_size * (this.idx / this.step)/ rate;
-        console.log("length: " + this.content.length + ' step: ' + this.step +" pos:" + slider_pos +" rate: " + rate + ' idx: '+ this.idx );
         this.slider.css({"left": slider_pos});
     };
 
