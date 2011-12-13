@@ -1,5 +1,24 @@
 /*
  * Spread: Speed Reading Extension
+ *
+ * Upcoming versions TODO: 
+ *  - Problem : fast reading is not related to word count. It directly depends on the visual content blocks.
+ *  displaying n words breaks the readability when n words contains x characters in one line and 10x
+ *  characters in another, such as the following 2 word blocks : 
+ *
+ *    some man 
+ *    international differences
+ *
+ *  - Possible Solution: break the content in to reading blocks and split the words by character count 
+ * instead of word count. For example a 30 c/s setting may display word groups such as :
+ *
+ *      article, we will use a pen . - 28 chars
+ *      each line (with the cap on) - 27 chars 
+ *      but it is recommended that you - 30 chars
+ *
+ *  For the purpose is to display a readable block, as long as the the visual text block is consistent 
+ *  reading and understanding the content would be much easier everytime.
+ *
  */
 
 var doc_body  = $("body");
