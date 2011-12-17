@@ -19,98 +19,157 @@
  *  For the purpose is to display a readable block, as long as the the visual text block is consistent 
  *  reading and understanding the content would be much easier everytime.
  *
+ * variables: uniqueVariableName
+ * functions: unique_function_name
+ *
  */
 
-var doc_body  = $("body");
-jQuery.fn.exists = function(){return this.length>0;}
+jQuery.fn.exists = function(){ 
+    return this.length > 0; 
+};
+
 var myid = chrome.i18n.getMessage("@@extension_id");
-var imagepath = format('chrome-extension://{0}/images/', myid);
+var imagePath = format('chrome-extension://{0}/images/', myid);
 
 function format(){
-
     var formatted_str = arguments[0] || '';
-    for(var i=1; i<arguments.length; i++){
-        var re = new RegExp("\\{"+(i-1)+"}", "gim");
+    var re, i;
+    for(i=1; i<arguments.length; i++){
+        re = new RegExp("\\{"+(i-1)+"}", "gim");
         formatted_str = formatted_str.replace(re, arguments[i]);
     }
     return formatted_str;
 }
 
 
-function getSelectedText()
+function get_selected_text()
 {
     txt = String(window.getSelection());
-    return txt.replace(/^[\s\t]+/g, '').replace(/[\s\t]+$/g, '').replace(/[\t\r\n]/g,' ');
+    return txt.replace(/(^[\s\t]+|[\s\t]+$)/g, '').replace(/[\t\r\n]/g,' ');
 }
 
-function isnotnull(hede){
-    return (hede != '' && hede !== null && hede !== undefined)? hede: null;
+function is_not_null(obj){
+    return $.inArray(obj)? obj: null;
 }
 
 var SPREAD_TEXT_READER = function(content, conf){
 
-    this.conf = {};
-    for (var item in conf){
-        if (conf[item] !== undefined && conf[item] !== null){
-            this.conf[item] = parseInt(conf[item]);
+    this.conf = {}; 
+    this.set_conf = function(c){
+        var item; 
+        for (item in c){
+            if (is_not_null(c[item])){
+                this.conf[item] = parseInt(c[item], 10);
+            }
         }
-    }
-    this.content = String(content).split(' ').filter(isnotnull);
+    };
+
+    this.content = String(content).split(' ').filter(is_not_null);
     this.idx = 0;
-    this.step = parseInt(this.conf.words);
     this.timer = null;
     this.running = false;
     this.interval = null;
     this.slider = null;
     this.slider_size = 200;
+    this.set_conf(conf);
+    this.textBlocks = [];
 
-    this.updateSlider = function(){
-        var rate = this.content.length / this.step;
-        var slider_pos = this.slider_size * (this.idx / this.step)/ rate;
+    this.update_slider = function(){
+        var rate = this.content.length / this.conf.chars;
+        var slider_pos = this.slider_size * (this.idx / this.conf.chars)/ rate;
         this.slider.css({"left": slider_pos});
     };
 
-    this.next = function(){
-        var c = (this.content.slice(this.idx, this.idx+this.step)).join(' ');
-        this.idx += this.step;
-        if (c == '' || c === undefined || c === null){
-            this.running = false;
-            return null;
-        }
-        return c;
-    };
 
     this.update_interval = function(){
         this.interval = 60000/this.conf.fpm ;
     };
 
-    this.more_words = function(){
-        this.step += 1;
-        this.update_interval();
-        this.updateSettings();
+    this.next = function(){
+
+        if (this.idx == this.content.length - 1){
+            /*
+             * stop running if at the end
+             */
+            return null;
+        }
+
+        var c = this.content.slice(this.idx);
+        var _text_length = 0;
+        var temp_length = 0;
+        var tempidx = this.idx ;
+
+        for(var i=0; i < c.length; i++){
+            temp_length += c[i].length;
+
+            if (temp_length > this.conf.chars ){
+                if (i == 0){
+                    this.idx += 1;
+                    return this.content[tempidx];
+                } else {
+                    /* this.conf.chars == 10
+                     * n words = 8 
+                     * n + 1 words = 13
+                     * 13 + 8 /2 > 10, then we display n words, else 
+                     * display n + 1 words for readability
+                     */
+
+                    if ((temp_length + _text_length) / 2 > this.conf.chars){
+                        this.idx += i - 1;
+                        return this.content
+                            .slice(tempidx, this.idx).join(' ');
+                    } 
+                    this.idx += i;
+                    return this.content
+                            .slice(tempidx, this.idx).join(' ');
+                
+                }
+            }
+            _text_length = temp_length;
+        }
+        this.idx = this.content.length - 1;
+        return this.content.slice(tempidx).join(' ');
     };
 
-    this.less_words = function(){
-        this.step = (this.step >= 2)? this.step -1: 1;
-        this.update_interval();
-        this.updateSettings();
+    this.more_chars = function(arg){
+        this.conf.chars += arg;
+        return this.update_settings();
+    };
+
+    this.less_chars = function(arg){
+        this.conf.chars -= ((this.conf.chars > arg )? arg: 0);
+        return this.update_settings();
     };
 
     this.restart = function(){
-        clearInterval(this.timer);
+        if(this.running){
+           this.stop();
+        }
         this.idx = 0;
-        this.running = false;
         return this.start();
     };
 
-    this.setSpeed = function(arg){
-        clearInterval(this.timer);
-        this.running = false;
+    this.speed_up = function(arg){
+        this.conf.fpm += arg;
         this.update_interval();
-        this.updateSettings();
-        return this.start();
+        return this.update_settings();
+    }
+
+    this.slow_down = function(arg){
+        this.conf.fpm -= ((this.conf.fpm > arg)? arg: 0);
+        this.update_interval();
+        return this.update_settings();
+    }
+
+    this.increase_font_size = function(arg){
+        this.conf.font += arg;
+        return this.update_settings();
     };
 
+    this.decrease_font_size = function(arg){
+        this.conf.font -= ((this.conf.font > arg )? arg: 0);
+        return this.update_settings();
+    };
 
     this.start = function(){
         if (this.running){
@@ -118,40 +177,47 @@ var SPREAD_TEXT_READER = function(content, conf){
         }
         this.running = true;
         this.timer = setInterval(function(){
-            var hede = this.next();
-            if (hede === null){
+            
+            var next_block = this.next();
+            if (!is_not_null(next_block)){
                 return this.stop();
             } 
             
-            if(this.slider){
-                this.updateSlider(); //().animate({"left": this.idx});
-            }
+            //if(this.slider){
+            //    this.updateSlider(); //().animate({"left": this.idx});
+            //}
            
-            $('#spread_reader_body').text(hede);
+            $('#spread_reader_body').text(next_block);
         }, this.interval);
-        return this.displaySettings();
+        return this.display_settings();
     };
 
     this.stop = function(){
-        clearInterval(this.timer);   
         this.running = false;
+        clearInterval(this.timer);   
     };
 
-    this.updateSettings = function(){
+    this.update_settings = function(){
         settings = {
-            /* frame per minute */
-            'fpm': this.conf.fpm, 
-            'words': parseInt(this.step),
-            'font': parseInt($('#spread_reader_body').css('font-size'))
+            'fpm': this.conf.fpm, /* frame per minute */
+            'chars': this.conf.chars,
+            'font': this.conf.font
         };
 
-        this.displaySettings();
-        chrome.extension.sendRequest({command: 'saveSettings', settings_data: settings});
+        this.display_settings();
+        chrome.extension.sendRequest({
+            command: 'saveSettings', 
+            settings_data: settings
+        });
     };
 
-    this.displaySettings = function(){
-        $('#spread_infopane').text(format('{0} wpm / {1} words / {2}px fonts', 
-                this.conf.fpm*this.step, this.step, parseInt($('#spread_reader_body').css('font-size'))));
+    this.display_settings = function(){
+        $('#spread_infopane').text(
+                format('{0} cpm / {1} chars / {2}px fonts', 
+                    this.conf.fpm * this.conf.chars, 
+                    this.conf.chars, 
+                    parseInt($('#spread_reader_body')
+            .css('font-size'), 10)));
 
     };
 
@@ -164,6 +230,7 @@ var SPREAD_TEXT_READER = function(content, conf){
 function create_reader(text){
     text = text.replace(/(\w+)([,\.:;\(\)\[\]\"]+)(\w+)/gim, '$1$2 $3');
     var count = text.match(/([^\s\t]+)/gim).length;
+
 
     chrome.extension.sendRequest(
             {command:'getSettings'}, 
@@ -189,26 +256,26 @@ function create_reader(text){
                 var reader_buttons = $('<ul id="spread_reader_buttons"></ul>')
                     .html(
                             "<li><label>Command</label>" + 
-                                format("<img id='spread_reader_start' src='{0}/start.png'>", imagepath) +
-                                format("<img id='spread_reader_stop' src='{0}/stop.png'>", imagepath) + 
+                                format("<img id='spread_reader_start' title='(Re)Start' src='{0}/start.png'>", imagePath) +
+                                format("<img id='spread_reader_stop' title='Stop' src='{0}/stop.png'>", imagePath) + 
                             "</li>" + 
                             "<li><label>Font size</label>" +
-                                format("<img id='spread_reader_bigger' src='{0}/plus.png'>", imagepath)  +
-                                format("<img id='spread_reader_smaller' src='{0}/minus.png'>", imagepath) +
+                                format("<img id='spread_reader_bigger' title='Increase font size' src='{0}/plus.png'>", imagePath)  +
+                                format("<img id='spread_reader_smaller' title='Decrease font size' src='{0}/minus.png'>", imagePath) +
                             "</li>" +
                             "<li><label>Speed</label>" +
-                                format( "<img id='spread_reader_faster' src='{0}/plus.png'>", imagepath)  +
-                                format( "<img id='spread_reader_slower' src='{0}/minus.png'>", imagepath)  +
+                                format( "<img id='spread_reader_faster' title='Speed up' src='{0}/plus.png'>", imagePath)  +
+                                format( "<img id='spread_reader_slower' title='Slow down' src='{0}/minus.png'>", imagePath)  +
                             "</li>" + 
-                            "<li><label># words</label>" +
-                                format("<img id='spread_reader_more_words' src='{0}/plus.png'>", imagepath)  +  
-                                format("<img id='spread_reader_less_words' src='{0}/minus.png'>", imagepath)  +
+                            "<li><label># characters</label>" +
+                                format("<img id='spread_reader_more_chars' title='Show more characters' src='{0}/plus.png'>", imagePath)  +  
+                                format("<img id='spread_reader_less_chars' title='Show less characters' src='{0}/minus.png'>", imagePath)  +
                             "</li>" +
                             "<li class='spread_right'>" +
                                 "<div id='spread_infopane'></div>" +
-                                "<div id='spread_reader_slider'>" +
+                                /*"<div id='spread_reader_slider'>" +
                                     "<div id='spread_reader_knob'></div><span id='speed_reader_step'></span>" +
-                                "</div>"+
+                                "</div>"+*/
                             "</li>"
                          );
 
@@ -219,60 +286,62 @@ function create_reader(text){
                 div.append(reader_inner_container)
                     .append(reader_buttons);
 
-                doc_body.append(background).append(div);
+                $('body').append(background).append(div);
 
-                reader_inner_container
-                .css({'width': w_width * 0.6, 'height': w_height * 0.4});
+                reader_inner_container.css({
+                    'width': w_width * 0.6, 
+                    'height': w_height * 0.4
+                });
 
                 var x = (w_width - reader_inner_container.width())/2;
                 var y = (w_height - reader_inner_container.height() + reader_buttons.height())/2;
                 div.css({'top': y,'left':x});
 
+                reader.display_settings();
 
-                $('#spread_reader_slider').css('background-image', format('url({0}/slider_blue_bg.png) !important', imagepath));
-                $('#spread_reader_knob').css('background-image', format('url({0}/slider_handle.png) !important', imagepath))
-                    .draggable({
-                    containment:'parent',
-                    axis:'x',
-                    drag:function(e,ui){
-                        var pos = ui.position.left; 
-                        // reader.index üzerinden yer belirletmek lazım
-                    }
-                });
-                reader.slider = $('#spread_reader_knob');
+
+                //$('#spread_reader_slider').css('background-image', format('url({0}/slider_blue_bg.png) !important', imagePath));
+                //$('#spread_reader_knob').css('background-image', format('url({0}/slider_handle.png) !important', imagePath))
+                //    .draggable({
+                //    containment:'parent',
+                //    axis:'x',
+                //    drag:function(e,ui){
+                //        var pos = ui.position.left; 
+                //        // reader.index üzerinden yer belirletmek lazım
+                //    }
+                //});
+                //reader.slider = $('#spread_reader_knob');
 
 
                 $('#spread_reader_bigger').click(function(){
-                    var fontsize = parseInt($('#spread_reader_body').css('font-size'));
-                    $('#spread_reader_body').css({'font-size': format('{0}px !important', fontsize + 3)});
-                    reader.updateSettings();
+                    reader.increase_font_size(2);
+                    return $('#spread_reader_body').css({'font-size': format('{0}px !important', reader.conf.font)});
                 });
+
                 $('#spread_reader_smaller').click( function(){
-                    var fontsize = parseInt($('#spread_reader_body').css('font-size'));
-                    $('#spread_reader_body').css({'font-size': format('{0}px !important', fontsize - 3)});
-                    reader.updateSettings();
+                    reader.decrease_font_size(2);
+                    return $('#spread_reader_body').css({'font-size': format('{0}px !important', reader.conf.font)});
                 });
+
                 $('#spread_reader_faster').click(function(){
-                    reader.conf.fpm += 20;
-                    reader.setSpeed();
+                    return reader.speed_up(20);
                 });
                 $('#spread_reader_slower').click(function(){
-                    reader.conf.fpm = (reader.conf.fpm > 20)? reader.conf.fpm - 20: reader.conf.fpm;
-                    reader.setSpeed();
+                    return reader.slow_down(20);
                 });
                 $('#spread_reader_start').click( function(){
                     reader.restart();
-                    $('#spread_reader_start').attr('src', format('{0}/restart.png', imagepath));
+                    return $('#spread_reader_start').attr('src', format('{0}/restart.png', imagePath));
                 });
                 $('#spread_reader_stop').click(function(){
-                    reader.stop();
+                    return reader.stop();
                 });
-                $('#spread_reader_more_words').click( function(){
-                    reader.more_words();
+                $('#spread_reader_more_chars').click( function(){
+                    return reader.more_chars(2);
                 });
 
-                $('#spread_reader_less_words').click( function(){
-                    reader.less_words();
+                $('#spread_reader_less_chars').click( function(){
+                    return reader.less_chars(2);
                 });
 
 
@@ -282,7 +351,7 @@ function create_reader(text){
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     if (request.command == 'openReader'){
-        var text = getSelectedText();
+        var text = get_selected_text();
         if (text.length){
             create_reader(text);
         }
