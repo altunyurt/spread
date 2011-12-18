@@ -83,16 +83,24 @@ var SPREAD_TEXT_READER = function(content, conf){
 
     this.update_interval = function(){
         this.interval = 60000/this.conf.fpm ;
+        clearInterval(this.timer);
+        this.timer = setInterval(function(){
+            
+            var next_block = this.next();
+            if (!is_not_null(next_block)){
+                return this.stop();
+            } 
+            
+            //if(this.slider){
+            //    this.updateSlider(); //().animate({"left": this.idx});
+            //}
+           
+            $('#spread_reader_body').text(next_block);
+            
+        }, this.interval);
     };
 
     this.next = function(){
-
-        if (this.idx == this.content.length - 1){
-            /*
-             * stop running if at the end
-             */
-            return null;
-        }
 
         var c = this.content.slice(this.idx);
         var temp_length = 0;
@@ -101,6 +109,7 @@ var SPREAD_TEXT_READER = function(content, conf){
 
         for(var i=0; i < c.length; i++){
             temp_length += c[i].length;
+            
 
             if (temp_length == this.conf.chars){
                 // we have all the neded text
@@ -138,17 +147,21 @@ var SPREAD_TEXT_READER = function(content, conf){
                         if ((2 * temp_length + next_length) / 2 > this.conf.chars){
                             // we don't need the word
                             this.idx += i + 1;
+                            
                             return this.content.slice(tempidx, this.idx ).join(' ');
                         }
                         // we need the word, roll on
+                            
                     } 
                 } else {
                     this.idx += i + 1;
+                            
                     return this.content.slice(tempidx, this.idx).join(' ');
                 }
             }
         }
-        this.idx = this.content.length - 1;
+        this.idx += i + 1;
+        
         return this.content.slice(tempidx).join(' ');
     };
 
@@ -197,20 +210,7 @@ var SPREAD_TEXT_READER = function(content, conf){
             return;
         }
         this.running = true;
-        this.timer = setInterval(function(){
-            
-            var next_block = this.next();
-            if (!is_not_null(next_block)){
-                return this.stop();
-            } 
-            
-            //if(this.slider){
-            //    this.updateSlider(); //().animate({"left": this.idx});
-            //}
-           
-            $('#spread_reader_body').text(next_block);
-            
-        }, this.interval);
+        this.update_interval();
         return this.display_settings();
     };
 
@@ -243,7 +243,7 @@ var SPREAD_TEXT_READER = function(content, conf){
 
     };
 
-    this.update_interval();
+    //this.update_interval();
     return this;
 };
 
