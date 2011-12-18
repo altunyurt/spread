@@ -185,13 +185,17 @@ var SPREAD_TEXT_READER = function(content, conf){
 
     this.speed_up = function(arg){
         this.conf.fpm += arg;
-        this.update_interval();
+        if (this.running){
+            this.update_interval();
+        }
         return this.update_settings();
     }
 
     this.slow_down = function(arg){
         this.conf.fpm -= ((this.conf.fpm > arg)? arg: 0);
-        this.update_interval();
+        if (this.running){
+            this.update_interval();
+        }
         return this.update_settings();
     }
 
@@ -353,6 +357,7 @@ function create_reader(text){
                 });
                 $('#spread_reader_start').click( function(){
                     reader.restart();
+                    return $('#spread_reader_body').css({'font-size': format('{0}px !important', reader.conf.font)});
                     return $('#spread_reader_start').attr('src', format('{0}/restart.png', imagePath));
                 });
                 $('#spread_reader_stop').click(function(){
