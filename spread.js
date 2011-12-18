@@ -95,37 +95,58 @@ var SPREAD_TEXT_READER = function(content, conf){
         }
 
         var c = this.content.slice(this.idx);
-        var _text_length = 0;
         var temp_length = 0;
         var tempidx = this.idx ;
+        var next_length = 0;
 
         for(var i=0; i < c.length; i++){
             temp_length += c[i].length;
 
-            if (temp_length > this.conf.chars ){
-                if (i == 0){
-                    this.idx += 1;
-                    return this.content[tempidx];
-                } else {
-                    /* this.conf.chars == 10
+            if (temp_length == this.conf.chars){
+                // we have all the neded text
+                this.idx += i + 1;
+                return this.content.slice(tempidx, this.idx).join(' ');
+            } else {
+                // if lesser, check the next element 
+                if (temp_length < this.conf.chars){
+                    // are we at the end?
+                    if (i == c.length -1 ){
+                        this.idx = this.content.length;
+                        return this.content.slice(tempidx, this.idx ).join(' ');
+                    }
+                    
+                    next_length = (c[i + 1]).length;
+                    /*
+                     * if next word is longer then our text limit,
+                     * then display all we got
+                     */
+                    if (next_length >= this.conf.chars){
+                        this.idx += i + 1;
+                        return this.content.slice(tempidx, this.idx).join(' ');
+                    }
+                    /*
+                     * if the text we have + next word is longer than the limit
+                     * than check if we need the next word.
+                     *
+                     * this.conf.chars == 10
                      * n words = 8 
                      * n + 1 words = 13
                      * 13 + 8 /2 > 10, then we display n words, else 
                      * display n + 1 words for readability
                      */
-
-                    if ((temp_length + _text_length) / 2 > this.conf.chars){
-                        this.idx += i - 1;
-                        return this.content
-                            .slice(tempidx, this.idx).join(' ');
+                    if (temp_length + next_length > this.conf.chars){
+                        if ((2 * temp_length + next_length) / 2 > this.conf.chars){
+                            // we don't need the word
+                            this.idx += i + 1;
+                            return this.content.slice(tempidx, this.idx ).join(' ');
+                        }
+                        // we need the word, roll on
                     } 
-                    this.idx += i;
-                    return this.content
-                            .slice(tempidx, this.idx).join(' ');
-                
+                } else {
+                    this.idx += i + 1;
+                    return this.content.slice(tempidx, this.idx).join(' ');
                 }
             }
-            _text_length = temp_length;
         }
         this.idx = this.content.length - 1;
         return this.content.slice(tempidx).join(' ');
@@ -188,6 +209,7 @@ var SPREAD_TEXT_READER = function(content, conf){
             //}
            
             $('#spread_reader_body').text(next_block);
+            
         }, this.interval);
         return this.display_settings();
     };
