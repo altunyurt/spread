@@ -242,9 +242,7 @@ var SPREAD_TEXT_READER = function(content, conf){
                 format('{0} cpm / {1} chars / {2}px fonts', 
                     this.conf.fpm * this.conf.chars, 
                     this.conf.chars, 
-                    parseInt($('#spread_reader_body')
-            .css('font-size'), 10)));
-
+                    this.conf.font, 10));
     };
 
     //this.update_interval();
@@ -357,7 +355,7 @@ function create_reader(text){
                 });
                 $('#spread_reader_start').click( function(){
                     reader.restart();
-                    return $('#spread_reader_body').css({'font-size': format('{0}px !important', reader.conf.font)});
+                    $('#spread_reader_body').css({'font-size': format('{0}px !important', reader.conf.font)});
                     return $('#spread_reader_start').attr('src', format('{0}/restart.png', imagePath));
                 });
                 $('#spread_reader_stop').click(function(){
