@@ -1,44 +1,8 @@
 <html>
     <head>
-        <script type="text/javascript" src="mootools-1.2.4-core.js"></script>
-        <script type="text/javascript" src="mootools-1.2.4.2-more.js"></script>
-        <script type="text/javascript" src="mooRainbow.js"></script>
-        <script type="text/javascript">
-            defaults = {
-                'fpm': 300,
-                'words': 2,
-                'font': 14
-            };
-
-            function restore_options(){
-                var settings = localStorage['spread_settings'] || {};
-                $$('input').each(function(item){
-                        var setting_name = item.name;
-                        item.value = (settings[setting_name] != undefined
-                            )?settings[setting_name] : defaults[setting_name];
-                        });
-            };
-            
-            function save_options(data){
-                settings = {};
-                $$('input').each(function(item){
-                        var setting_name = item.name;
-                        var value =  item.value;
-                        settings[setting_name] = value;
-                });
-                localStorage['spread_settings'] = settings;
-            };
-
-            window.addEvent('domready', function() {
-            	var r = new MooRainbow('myRainbow', {
-	                    });
-            });
-
-        </script>
-        <link rel="stylesheet" href="spread.css" type="text/css">
-        <link rel="stylesheet" href="mooRainbow.css" type="text/css">
+        <link rel="stylesheet" href="css/spread.css" type="text/css">
     </head>
-    <body onload="restore_options();">
+    <body>
         <div id="spread_options">
             <h3>Spread &ndash; Speed reader options:</h3>
             
@@ -48,17 +12,11 @@
             <label for="font">Font size:</label>
                 <input type="text"  name="font" id="font"><br>
                 
-            <label for="words">Number of words to display:</label>
-                <input type="text" name="words" id="words"><br>
-
-            <label for="readercolor">Panel background color:<label>
-                    <label>
-                <img id="myRainbow" src="images/rainbow.png" alt="[r]" width="16" height="16" />
-	            <input id="myInput" name="myInput" type="text" size="13" />
-                </label>
-            <button onclick="save_options();">Save options</button><br>
-    </div>
-        
+            <label for="chars">Number of characters to display:</label>
+                <input type="text" name="chars" id="chars"><br>
+            <input type="submit" value="save" id="save">
+        </div>
+        <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+        <script type="text/javascript" src="js/options.js"></script>
     </body>
-
 </html>

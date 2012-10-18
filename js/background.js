@@ -1,8 +1,7 @@
 var defaults = {
-    'fpm': 120,
-    'chars': 12,
-    'font': 34,
-    'color': '#000'
+    fpm: 120,
+    chars: 12,
+    font: 34
 };
 
 chrome.contextMenus.create({'title':'Speed read selection', 
@@ -21,35 +20,22 @@ if (chrome.commands != undefined ){
     });
 }
 
-function getValue(item){
-    var lsval = localStorage[item];
-    if(lsval == null || lsval == undefined || lsval == "null"){
-        return defaults[item];
-    } 
-    return lsval;
-};
 
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-    var conf = {}
-    if (request.command == 'getSettings'){
-        for (var item in defaults){
-            if (item == undefined){
-                break;
-            }
-            conf[item] = getValue(item);
+    
+    var settings = localStorage["spread_settings"]?JSON.parse(localStorage['spread_settings']):defaults;
 
-        }
-        sendResponse({'settings':conf});
+    if (request.command == 'getSettings'){
+        
+        return sendResponse({'settings':settings});
+
     } else if (request.command == 'saveSettings'){
         var data = request.settings_data;
-        for(var item in data){
-            if(item == undefined ){
-                break;
-            }
-            localStorage[item] = data[item]
-        }
-        sendResponse({});
+        localStorage["spread_settings"] = JSON.stringify(data);
+        return sendResponse({});
+    } else if (request.command == 'openOptions'){
+        return chrome.tabs.create({url: "options.html"});
     }
 });
 

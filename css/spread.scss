@@ -17,7 +17,8 @@
     border: 1px solid #999 !important;
     border-radius: 5px !important;
     background: white !important;
-    position: absolute !important;
+    //position: absolute !important;
+    position: fixed !important;
     z-index: 9001 !important;
     display: block !important;
     color: black !important;
@@ -45,9 +46,13 @@
     vertical-align: middle !important;
     font-size: 24px !important; }
 
-#spread_infopane {
+#spread_reader_infopane {
     height: 10px !important;
-    font-size: 9px !important; }
+    font-size: 9px !important; 
+    position: absolute !important;
+    top: 0;
+    right: 0;
+}
 
 .spread_right {
         float: right !important;
@@ -138,5 +143,12 @@ ul#spread_reader_buttons {
         display: block !important;
         margin-bottom: 10px !important;
         cursor: pointer;
+    }
+}
+
+#spread_options {
+    label {
+        width: 200px;
+        float: left;
     }
 }

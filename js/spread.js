@@ -175,13 +175,20 @@ var SPREAD_TEXT_READER = function(content, conf){
         return self.update_settings();
     }
 
+    self.set_font_size = function(arg){
+        return $('#spread_reader_text').attr("style", 
+                                    dict_format("font-size: {font}px  !important", {font: reader.conf.font}));
+    };
+
     self.increase_font_size = function(arg){
         self.conf.font += arg;
+        self.set_font_size(self.conf.font);
         return self.update_settings();
     };
 
     self.decrease_font_size = function(arg){
         self.conf.font -= ((self.conf.font > arg )? arg: 0);
+        self.set_font_size(self.conf.font);
         return self.update_settings();
     };
 
@@ -191,6 +198,7 @@ var SPREAD_TEXT_READER = function(content, conf){
         }
         self.running = true;
         self.update_interval();
+        self.set_font_size(self.conf.font);
         return self.display_settings();
     };
 
@@ -206,6 +214,7 @@ var SPREAD_TEXT_READER = function(content, conf){
             'font': self.conf.font
         };
 
+        console.log(settings);
         self.display_settings();
         chrome.extension.sendRequest({
             command: 'saveSettings', 
@@ -214,11 +223,11 @@ var SPREAD_TEXT_READER = function(content, conf){
     };
 
     self.display_settings = function(){
-        $('#spread_infopane').text(
-                format('{0} cpm / {1} chars / {2}px fonts', 
-                    self.conf.fpm * self.conf.chars, 
-                    self.conf.chars, 
-                    self.conf.font, 10));
+        $('#spread_reader_infopane').text(
+                dict_format('{cpm} cpm / {chars} chars / {font}px fonts', 
+                    {cpm: self.conf.fpm * self.conf.chars, 
+                    chars: self.conf.chars, 
+                    font: self.conf.font}));
     };
 
     //self.update_interval();
@@ -245,7 +254,7 @@ function create_reader(text){
 
                 var background = $('<div/>', {
                     id: 'spread_reader_background',
-                    style: format("width:{0}px;height:{1}px;", w_width, w_height)
+                    style: dict_format("width:{w}px;height:{h}px;", {w: w_width, h:w_height})
                 }).mousedown(function(){
                     $('#spread_reader').remove();
                     background.remove();
@@ -285,7 +294,7 @@ function create_reader(text){
                             help: chrome.extension.getURL("images/help_24.png"),
                             settings: chrome.extension.getURL("images/settings_24.png")
                         })        
-                );
+                ).append("<span id='spread_reader_infopane'></span>");
 
 
                 reader.display_settings();
@@ -306,12 +315,10 @@ $('#spread_reader_restart').live("click", function(event){
 $('#spread_reader').live("keydown", function(event){
     var kfuncs = {
         "f": function(){
-                    reader.decrease_font_size(2);
-                    return $('#spread_reader_text').css({'fontSize': format('{0}px !important', reader.conf.font)});
+                    return reader.decrease_font_size(2);
         },
         "F": function(){
-                    reader.increase_font_size(2);
-                    return $('#spread_reader_text').css({'fontSize': format('{0}px !important', reader.conf.font)});
+                    return reader.increase_font_size(2);
         },
         "S": function(){
                     return reader.speed_up(20);
@@ -336,12 +343,19 @@ $('#spread_reader').live("keydown", function(event){
 
 $('#spread_reader_help').live("click", function(event){
     alert("Spread Speed Reader Extension Usage\n"
-        + "\n\n"
-        + "Speed Up/Down: S/s\n"
-        + "Font Size Up/Down: F/f\n"
-        + "Text Length Up/Down: T/t\n"
+        + "\n"
+        + "Speed Up / Slow Down: S / s\n"
+        + "Increase / Decrease Font Size: F / f\n"
+        + "Increase / Decrease Text Length: T / t\n"
     );
 });
+
+$("#spread_reader_settings").live("click", function(event){
+        return chrome.extension.sendRequest({
+            command: 'openOptions', 
+        });
+});
+
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     if (request.command == 'openReader'){
