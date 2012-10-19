@@ -1,6 +1,3 @@
-jQuery.fn.exists = function(){ 
-    return this.length > 0; 
-};
 
 var myid = chrome.i18n.getMessage("@@extension_id");
 var imagePath = format('chrome-extension://{0}/images/', myid);

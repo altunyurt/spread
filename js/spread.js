@@ -45,19 +45,16 @@ var SPREAD_TEXT_READER = function(content, conf){
     };
 
     self.content = String(content).split(' ').filter(is_not_null);
-    self.idx = 0;
+    self.idx = 0;       // index of textblock count 
     self.timer = null;
     self.running = false;
     self.interval = null;
     self.slider = null;
-    self.slider_size = 200;
     self.set_conf(conf);
     self.textBlocks = [];
 
     self.update_slider = function(){
-        var rate = self.content.length / self.conf.chars;
-        var slider_pos = self.slider_size * (self.idx / self.conf.chars)/ rate;
-        self.slider.slider("value", slider_pos);
+        self.slider.slider({"value": self.idx});
     };
 
     self.update_interval = function(){
@@ -77,15 +74,12 @@ var SPREAD_TEXT_READER = function(content, conf){
     };
 
     self.set_position = function(val){
-        console.log(val);
+        self.idx = val;
     };
 
     self.regroupContent = function(){
-        //var c = self.content.slice(self.idx);
-
         var idx = 0;
         self.textBlocks = [];
-
 
         for(;idx < self.content.length;){
             temp_content = self.content.slice(idx);
@@ -119,10 +113,12 @@ var SPREAD_TEXT_READER = function(content, conf){
             self.textBlocks.push(temp_content.slice(0, tidx + 1));
             idx += tidx + 1;
         }
+        self.slider.slider({max: self.textBlocks.length});
     };
 
     self.next = function(){
-        return self.textBlocks[self.idx++].join(" ");
+        var blocks = self.textBlocks[self.idx++];
+        return blocks != undefined ? blocks.join(" "): null;
     };
 
 
@@ -268,7 +264,7 @@ function create_reader(text){
                             .slider({
                                 range: "min",
                                 min: 0,
-                                max: reader.slider_size,
+                                max: reader.reader.textBlocks.length,
                                 value: 0,
                                 slide: function(event, ui){
                                     reader.set_position(ui.value);
