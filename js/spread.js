@@ -57,7 +57,7 @@ var SPREAD_TEXT_READER = function(content, conf){
     self.update_slider = function(){
         var rate = self.content.length / self.conf.chars;
         var slider_pos = self.slider_size * (self.idx / self.conf.chars)/ rate;
-        self.slider.css({"left": slider_pos});
+        self.slider.slider("value", slider_pos);
     };
 
     self.update_interval = function(){
@@ -70,84 +70,73 @@ var SPREAD_TEXT_READER = function(content, conf){
                 return self.stop();
             } 
             
-           
             $('#spread_reader_text').text(next_block);
+            self.update_slider();
             
         }, self.interval);
     };
 
-    self.next = function(){
+    self.set_position = function(val){
+        console.log(val);
+    };
 
-        var c = self.content.slice(self.idx);
-        var temp_length = 0;
-        var tempidx = self.idx ;
-        var next_length = 0;
+    self.regroupContent = function(){
+        //var c = self.content.slice(self.idx);
 
-        for(var i=0; i < c.length; i++){
-            temp_length += c[i].length;
+        var idx = 0;
+        self.textBlocks = [];
+
+
+        for(;idx < self.content.length;){
+            temp_content = self.content.slice(idx);
+
+            var tidx = 0,
+                temp_length = 0,    
+                next_length = 0;
+
+            for(var i=0; i < temp_content.length; i++){
+                temp_length += temp_content[i].length;
             
-
-            if (temp_length == self.conf.chars){
-                // we have all the neded text
-                self.idx += i + 1;
-                return self.content.slice(tempidx, self.idx).join(' ');
-            } else {
-                // if lesser, check the next element 
-                if (temp_length < self.conf.chars){
-                    // are we at the end?
-                    if (i == c.length -1 ){
-                        self.idx = self.content.length;
-                        return self.content.slice(tempidx, self.idx ).join(' ');
-                    }
-                    
-                    next_length = (c[i + 1]).length;
-                    /*
-                     * if next word is longer then our text limit,
-                     * then display all we got
-                     */
+                if (temp_length >= self.conf.chars || i == temp_content.length -1) {
+                    tidx = i;
+                    break;
+                } else {
+                    next_length = (temp_content[i + 1]).length;
+                    // next word itself is longer than the limit
                     if (next_length >= self.conf.chars){
-                        self.idx += i + 1;
-                        return self.content.slice(tempidx, self.idx).join(' ');
+                        tidx = i ;
+                        break;
                     }
-                    /*
-                     * if the text we have + next word is longer than the limit
-                     * than check if we need the next word.
-                     *
-                     * self.conf.chars == 10
-                     * n words = 8 
-                     * n + 1 words = 13
-                     * 13 + 8 /2 > 10, then we display n words, else 
-                     * display n + 1 words for readability
-                     */
-                    if (temp_length + next_length > self.conf.chars){
+                    if (temp_length + next_length > self.conf.chars) {
                         if ((2 * temp_length + next_length) / 2 > self.conf.chars){
                             // we don't need the word
-                            self.idx += i + 1;
-                            
-                            return self.content.slice(tempidx, self.idx ).join(' ');
+                            tidx = i;
+                            break;
                         }
-                        // we need the word, roll on
-                            
-                    } 
-                } else {
-                    self.idx += i + 1;
-                            
-                    return self.content.slice(tempidx, self.idx).join(' ');
+                    }
                 }
             }
+            self.textBlocks.push(temp_content.slice(0, tidx + 1));
+            idx += tidx + 1;
         }
-        self.idx += i + 1;
-        
-        return self.content.slice(tempidx).join(' ');
     };
+
+    self.next = function(){
+        return self.textBlocks[self.idx++].join(" ");
+    };
+
 
     self.more_chars = function(arg){
         self.conf.chars += arg;
+        self.regroupContent();
         return self.update_settings();
     };
 
     self.less_chars = function(arg){
-        self.conf.chars -= ((self.conf.chars > arg )? arg: 0);
+        if (self.conf.chars > arg){
+            self.conf.chars -= arg;
+            self.regroupContent();
+        }
         return self.update_settings();
     };
 
@@ -199,6 +188,7 @@ var SPREAD_TEXT_READER = function(content, conf){
         self.running = true;
         self.update_interval();
         self.set_font_size(self.conf.font);
+        self.regroupContent();
         return self.display_settings();
     };
 
@@ -214,7 +204,6 @@ var SPREAD_TEXT_READER = function(content, conf){
             'font': self.conf.font
         };
 
-        console.log(settings);
         self.display_settings();
         chrome.extension.sendRequest({
             command: 'saveSettings', 
@@ -269,6 +258,23 @@ function create_reader(text){
                                     width: r_width + 'px',
                                     height: r_height + 'px' 
                                     }).append("<span id='spread_reader_text'></span>"));
+                reader.slider = $("<div id='spread_reader_slider'></div>")
+                            .css({
+                                width: r_width/2,
+                                height: "20px",
+                                left: r_width/4,
+                                top: "10px"
+                            })
+                            .slider({
+                                range: "min",
+                                min: 0,
+                                max: reader.slider_size,
+                                value: 0,
+                                slide: function(event, ui){
+                                    reader.set_position(ui.value);
+                                }
+
+                            });
                 div.append(
                     $(dict_format("<div id='spread_reader_controls'>"
                                     + "<img id='spread_reader_start' title='Start' src='{start}'>"
@@ -294,7 +300,9 @@ function create_reader(text){
                             help: chrome.extension.getURL("images/help_24.png"),
                             settings: chrome.extension.getURL("images/settings_24.png")
                         })        
-                ).append("<span id='spread_reader_infopane'></span>");
+                )
+                .append("<span id='spread_reader_infopane'></span>")
+                .append(reader.slider);
 
 
                 reader.display_settings();
