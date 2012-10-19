@@ -1,7 +1,7 @@
-default_conf = {
-    fpm: 30,
-    chars: 2,
-    font: 14
+var defaults = {
+    fpm: 120,
+    chars: 12,
+    font: 34
 };
 
 $(function(){

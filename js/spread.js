@@ -25,6 +25,37 @@
  */
 
 
+//http://ak.net84.net/javascript/adding-css-rules-with-important-using-jquery/
+RegExp.escape = function(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
+// The style function
+jQuery.fn.style = function(styleName, value, priority) {
+    // DOM node
+    var node = this.get(0);
+    // Ensure we have a DOM node 
+    if (typeof node == 'undefined') {
+        return;
+    }
+    // CSSStyleDeclaration
+    var style = this.get(0).style;
+    // Getter/Setter
+    if (typeof styleName != 'undefined') {
+        if (typeof value != 'undefined') {
+            // Set style property
+            var priority = typeof priority != 'undefined' ? priority : '';
+            style.setProperty(styleName, value, priority);
+            return this;
+        } else {
+            // Get style property
+            return style.getPropertyValue(styleName);
+        }
+    } else {
+        // Get CSSStyleDeclaration
+        return style;
+    }
+}
 
 
 function is_not_null(obj){
@@ -39,7 +70,7 @@ var SPREAD_TEXT_READER = function(content, conf){
         var item; 
         for (item in c){
             if (is_not_null(c[item])){
-                self.conf[item] = parseInt(c[item], 10);
+                self.conf[item] = c[item];
             }
         }
     };
@@ -197,7 +228,9 @@ var SPREAD_TEXT_READER = function(content, conf){
         settings = {
             'fpm': self.conf.fpm, /* frame per minute */
             'chars': self.conf.chars,
-            'font': self.conf.font
+            'font': self.conf.font,
+            'bgcolor': self.conf.bgcolor,
+            'fgcolor': self.conf.fgcolor
         };
 
         self.display_settings();
@@ -232,8 +265,11 @@ function create_reader(text){
             function(response){
                 var settings = response.settings; 
                 reader = SPREAD_TEXT_READER(text, settings);
-                var w_width = $(window).width();
-                var w_height = $(window).height()
+
+                var w_width = Math.min($(window).width(), window.innerWidth);
+                var w_height = Math.min($(window).height(), window.innerHeight);
+
+                
                 var r_width = w_width * 0.8;
                 var r_height = w_height * 0.6;
 
@@ -253,7 +289,8 @@ function create_reader(text){
                                     left: (w_width*0.2)/2,
                                     width: r_width + 'px',
                                     height: r_height + 'px' 
-                                    }).append("<span id='spread_reader_text'></span>"));
+                                    })
+                                    .append("<span id='spread_reader_text'></span>"));
                 reader.slider = $("<div id='spread_reader_slider'></div>")
                             .css({
                                 width: r_width/2,
@@ -298,7 +335,41 @@ function create_reader(text){
                         })        
                 )
                 .append("<span id='spread_reader_infopane'></span>")
-                .append(reader.slider);
+                .append(reader.slider)
+                .append($("<div id='spread_reader_colors'></div>")
+                        .append($("<label>FgColor:</label><br><input id='spread_reader_fgcolor' " 
+                        + " value='"+ reader.conf.fgcolor +"'"
+                        + " class='color-picker' type='hidden'><br>"))
+                        .append($("<label>BgColor:</label><br><input id='spread_reader_bgcolor' "
+                        + " value='"+ reader.conf.bgcolor +"'"
+                        +" class='color-picker' type='hidden'><br>"))
+                );
+                setTimeout(function(){
+                    div
+                        .style("color", reader.conf.fgcolor, "important")
+                        .style("background-color", reader.conf.bgcolor, "important");
+
+                    $("#spread_reader_fgcolor")
+                            .miniColors({
+                            change: function(hex, rgb) {
+                                $("#spread_reader").style("color", hex, "important");
+                            },
+                            close: function(hex, rgb) {
+                                reader.conf.fgcolor = hex;
+                                reader.update_settings();
+                            }
+                        });
+                    $("#spread_reader_bgcolor")
+                            .miniColors({
+                            change: function(hex, rgb) {
+                                $("#spread_reader").style("background-color",  hex, "important");
+                            },
+                            close: function(hex, rgb) {
+                                reader.conf.bgcolor = hex;
+                                reader.update_settings();
+                            }
+                        });
+                    }, 500);
 
 
                 reader.display_settings();
@@ -360,6 +431,8 @@ $("#spread_reader_settings").live("click", function(event){
         });
 });
 
+
+;
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     if (request.command == 'openReader'){
