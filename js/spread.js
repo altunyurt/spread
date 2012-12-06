@@ -98,6 +98,7 @@ var SPREAD_TEXT_READER = function(content, conf){
                 return self.stop();
             } 
             
+            
             $('#spread_reader_text').text(next_block);
             self.update_slider();
             
@@ -133,7 +134,10 @@ var SPREAD_TEXT_READER = function(content, conf){
                         break;
                     }
                     if (temp_length + next_length > self.conf.chars) {
-                        if ((2 * temp_length + next_length) / 2 > self.conf.chars){
+                        var next_distance = Math.abs(self.conf.chars - (temp_length + next_length)),
+                            temp_distance = Math.abs(self.conf.chars - temp_length);
+                        
+                        if (next_distance > temp_distance){
                             // we don't need the word
                             tidx = i;
                             break;
