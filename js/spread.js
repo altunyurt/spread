@@ -403,11 +403,9 @@ $('#spread_reader').live('mousewheel', function(e){
  });
 $('#spread_reader').live('DOMMouseScroll', function(e){
      if(e.originalEvent.detail > 0) {
-         //scroll down
-         console.log('Down');
+         reader.slow_down(20);
      }else {
-         //scroll up
-         console.log('Up');
+         reader.speed_up(20);
      }
      //prevent page fom scrolling
      return false;
