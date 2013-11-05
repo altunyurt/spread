@@ -391,6 +391,26 @@ $('#spread_reader_restart').live("click", function(event){
     return reader.restart();
 });
 
+//mousewheel speed adjust functionality
+$('#spread_reader').live('mousewheel', function(e){
+     if(e.originalEvent.wheelDelta < 0) {
+         reader.slow_down(20);
+     }else {
+         reader.speed_up(20);
+     }
+     //prevent page fom scrolling
+     return false;
+ });
+$('#spread_reader').live('DOMMouseScroll', function(e){
+     if(e.originalEvent.detail > 0) {
+         reader.slow_down(20);
+     }else {
+         reader.speed_up(20);
+     }
+     //prevent page fom scrolling
+     return false;
+ });
+
 $('#spread_reader').live("keydown", function(event){
     var kfuncs = {
         "f": function(){
@@ -426,6 +446,7 @@ $('#spread_reader_help').live("click", function(event){
         + "Speed Up / Slow Down: S / s\n"
         + "Increase / Decrease Font Size: F / f\n"
         + "Increase / Decrease Text Length: T / t\n"
+        + "Use the mousewheel to increase / decrease speed"
     );
 });
 
