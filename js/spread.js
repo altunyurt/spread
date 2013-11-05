@@ -391,6 +391,28 @@ $('#spread_reader_restart').live("click", function(event){
     return reader.restart();
 });
 
+//mousewheel speed adjust functionality
+$('#spread_reader').live('mousewheel', function(e){
+     if(e.originalEvent.wheelDelta < 0) {
+         reader.slow_down(20);
+     }else {
+         reader.speed_up(20);
+     }
+     //prevent page fom scrolling
+     return false;
+ });
+$('#spread_reader').live('DOMMouseScroll', function(e){
+     if(e.originalEvent.detail > 0) {
+         //scroll down
+         console.log('Down');
+     }else {
+         //scroll up
+         console.log('Up');
+     }
+     //prevent page fom scrolling
+     return false;
+ });
+
 $('#spread_reader').live("keydown", function(event){
     var kfuncs = {
         "f": function(){
@@ -403,6 +425,7 @@ $('#spread_reader').live("keydown", function(event){
                     return reader.speed_up(20);
         },
         "s": function(){
+                    console.log('hello');
                     return reader.slow_down(20);
         },
         "T": function(){
