@@ -447,6 +447,7 @@ $('#spread_reader_help').live("click", function(event){
         + "Speed Up / Slow Down: S / s\n"
         + "Increase / Decrease Font Size: F / f\n"
         + "Increase / Decrease Text Length: T / t\n"
+        + "Use the mousewheel to increase / decrease speed"
     );
 });
 
