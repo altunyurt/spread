@@ -423,7 +423,6 @@ $('#spread_reader').live("keydown", function(event){
                     return reader.speed_up(20);
         },
         "s": function(){
-                    console.log('hello');
                     return reader.slow_down(20);
         },
         "T": function(){
